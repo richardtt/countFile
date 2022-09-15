@@ -1,0 +1,38 @@
+#!/bin/bash
+
+fileNum=0;
+lineNum=0;
+
+fct_count()
+#P1:directory or file
+{
+	if [[ -d "$1" ]];then
+		for f in `ls "$1"`; do
+			if [[ -d "$1/$f" ]]; then
+				fct_count "$1/$f";
+			else
+				local curLineNum=`wc -l "$1/$f" | awk '{print $1}'`;
+
+				let lineNum+=$curLineNum;
+				let fileNum+=1;
+			fi;
+		done;
+	else
+		local curLineNum=`wc -l "$1" | awk '{print $1}'`;
+		let lineNum+=$curLineNum;
+		let fileNum+=1;
+	fi
+}
+
+if [[ $# -gt 0 ]]; then
+
+	for d in $@ ; do
+		fct_count "$d";
+	done
+else
+	fct_count .
+fi
+
+echo "fileNum=$fileNum"
+echo "lineNum=$lineNum"
+
